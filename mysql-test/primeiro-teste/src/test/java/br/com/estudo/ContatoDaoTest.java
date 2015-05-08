@@ -35,4 +35,21 @@ public class ContatoDaoTest {
 			System.out.println("Endereço: " + contato.getEndereco() + "\n");
 		}
 	}
+	
+	@Test
+	public void deveAlterarUmContato() {
+		Contato contato = new Contato();
+		contato.setNome("Sansa Stark");
+		contato.setEmail("fulana@test");
+		contato.setEndereco("Rua da Fulana");
+		contato.setId((long) 7);
+		dao.altera(contato);
+	}
+	@Test
+	public void deveExcluirUmContato() {
+		Contato contato = new Contato();
+		contato.setId((long) 9);
+		dao.remove(contato);
+	}
+	
 }
