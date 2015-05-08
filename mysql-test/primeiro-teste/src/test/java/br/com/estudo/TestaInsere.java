@@ -6,9 +6,9 @@ public class TestaInsere {
 		
 	
 		Contato contato = new Contato();
-		contato.setNome("Teste");
-		contato.setEmail("teste@teste.com");
-		contato.setEndereco("Rua Teste 123 123");
+		contato.setNome("Jofrey");
+		contato.setEmail("jofrey@teste.com");
+		contato.setEndereco("Rua  Do Sul 123 123");
 		//contato.setDataNascimento(Calendar.getInstance());
 		
 		ContatoDao dao = new ContatoDao();
