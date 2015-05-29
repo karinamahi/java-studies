@@ -99,4 +99,37 @@ public class ContatoDao {
 		}
 	}
 	
+	public List<Contato> getContatoComNomeIniciandoCom(String inicioNome) {
+		try{
+			List<Contato> consultaPrimeiraLetra = new ArrayList<Contato>();
+			PreparedStatement stmt = (PreparedStatement) this.connection.prepareStatement("select * from contatos where nome like ?");
+			stmt.setString(1, inicioNome + "%"); 
+			ResultSet rs = stmt.executeQuery();
+			
+			while(rs.next()){
+				//Criando objeto Contato
+				Contato contato = new Contato();
+				contato.setId(rs.getLong("id"));
+				contato.setNome(rs.getString("nome"));
+				contato.setEmail(rs.getString("email"));
+				contato.setEndereco(rs.getString("endereco"));
+				
+				//montando a data através do Calendar
+				/* Calendar data = Calendar.getInstance();
+				data.setTime(rs.getDate("dataNascimento"));
+				contato.setDataNascimento(data);  
+				*/
+				
+				//adicionando o objeto à lista
+				consultaPrimeiraLetra.add(contato);
+			}
+			rs.close();
+			stmt.close();
+			return consultaPrimeiraLetra;
+			
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+ 		}
+	}
+	
 }

@@ -17,7 +17,7 @@ public class ContatoDaoTest {
 	@Test
 	public void deveAdicionarUmContato() {
 		Contato contato = new Contato();
-		contato.setNome("Karina");
+		contato.setNome("Teste1");
 		contato.setEmail("teste@teste");
 		contato.setEndereco("Rua Teste 12");
 		dao.adiciona(contato);
@@ -52,4 +52,18 @@ public class ContatoDaoTest {
 		dao.remove(contato);
 	}
 	
+	@Test
+	public void deveRetornarContatosComALetraInformada() {
+	
+		List<Contato> contatos = dao.getContatoComNomeIniciandoCom("T");
+		
+		Assert.assertNotNull(contatos);
+		Assert.assertTrue(contatos.size()>0);
+		for(Contato contato : contatos){
+			System.out.println("Consulta pelo início do nome");
+			System.out.println("Nome: " + contato.getNome());
+			System.out.println("Email: " +  contato.getEmail());
+			System.out.println("Endereço: " + contato.getEndereco() + "\n");
+		}
+	}
 }
