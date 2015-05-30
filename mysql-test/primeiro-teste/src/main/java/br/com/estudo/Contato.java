@@ -33,6 +33,12 @@ public class Contato {
 	public void setEndereco(String endereco) {
 		this.endereco = endereco;
 	}
+	@Override
+	public String toString() {
+		return "Contato [id=" + id + ", nome=" + nome + ", email=" + email
+				+ ", endereco=" + endereco + "]";
+	}
+	
 	/*public Calendar getDataNascimento() {
 		return dataNascimento;
 	}

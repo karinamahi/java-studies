@@ -66,4 +66,22 @@ public class ContatoDaoTest {
 			System.out.println("Endereço: " + contato.getEndereco() + "\n");
 		}
 	}
+	
+	@Test
+	public void deveRetornarContatoReferenteAoIdInformado() {
+		Contato contato = dao.consultaContatoById(15);
+		
+		Assert.assertNotNull(contato);
+		Assert.assertNotNull(contato.getId());
+		Assert.assertTrue(15l==contato.getId());
+		
+	}
+	
+	@Test
+	public void deveRetornarContatosComEmail() {
+		List<Contato> contatos = dao.getContatoByEmail("maria");
+		
+		Assert.assertNotNull(contatos);
+		
+	}
 }
