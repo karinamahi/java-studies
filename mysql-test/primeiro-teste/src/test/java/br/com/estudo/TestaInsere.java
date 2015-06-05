@@ -1,5 +1,8 @@
 package br.com.estudo;
 
+import br.com.estudo.dao.ContatoDao;
+import br.com.estudo.model.Contato;
+
 public class TestaInsere {
 
 	public static void main(String[] args) {

@@ -1,4 +1,4 @@
-package br.com.estudo;
+package br.com.estudo.model;
 
 //import java.util.Calendar;
 

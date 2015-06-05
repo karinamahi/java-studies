@@ -3,6 +3,8 @@ package br.com.estudo;
 import java.sql.Connection;
 import java.sql.SQLException;
 
+import br.com.estudo.db.ConnectionFactory;
+
 public class TestaConexao {
 
 	public static void main(String[] args) throws SQLException {

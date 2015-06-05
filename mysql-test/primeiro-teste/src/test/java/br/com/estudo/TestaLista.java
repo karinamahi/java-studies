@@ -2,6 +2,9 @@ package br.com.estudo;
 
 import java.util.List;
 
+import br.com.estudo.dao.ContatoDao;
+import br.com.estudo.model.Contato;
+
 public class TestaLista {
 
 	public static void main(String[] args) {

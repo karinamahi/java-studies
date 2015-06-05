@@ -1,10 +1,14 @@
 package br.com.estudo;
 
+import java.io.NotActiveException;
 import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+
+import br.com.estudo.dao.ContatoDao;
+import br.com.estudo.model.Contato;
 
 public class ContatoDaoTest {
 	private ContatoDao dao = null;
@@ -74,7 +78,6 @@ public class ContatoDaoTest {
 		Assert.assertNotNull(contato);
 		Assert.assertNotNull(contato.getId());
 		Assert.assertTrue(15l==contato.getId());
-		
 	}
 	
 	@Test
@@ -82,6 +85,37 @@ public class ContatoDaoTest {
 		List<Contato> contatos = dao.getContatoByEmail("maria");
 		
 		Assert.assertNotNull(contatos);
-		
 	}
+	
+	@Test
+	public void deveLancarExceptionQuandoEmailIsNull() {
+		try{
+			dao.getContatoByEmail(null);
+			Assert.fail();
+		}catch(IllegalArgumentException exception){
+			Assert.assertEquals(exception.getMessage(), "O email não pode ser nulo");
+		}
+	}
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void deveLancarExceptionQuandoEmailIsNullComAnnotation() {
+			dao.getContatoByEmail(null);
+			Assert.fail();
+	}
+	
+	@Test
+	public void deveLancarExceptionQuandoInicioNomeIsNull(){  //testa se uma excessão é lançada quando o parâmetro passado é nulo
+		try{
+			dao.getContatoComNomeIniciandoCom(null);
+			Assert.fail();
+		}catch(IllegalArgumentException exception){
+			Assert.assertEquals(exception.getMessage(),"O inicioNome não pode ser nulo");
+		}
+	}
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void deveLancarExceptionQuandoInicioNomeIsNullComAnnotation(){
+		dao.getContatoComNomeIniciandoCom(null);
+		Assert.fail();
+		}
 }

@@ -1,4 +1,4 @@
-package br.com.estudo;
+package br.com.estudo.db;
 
 import java.sql.Connection;
 import java.sql.SQLException;

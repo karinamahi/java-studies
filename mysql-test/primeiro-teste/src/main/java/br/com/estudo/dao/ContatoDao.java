@@ -1,4 +1,4 @@
-package br.com.estudo;
+package br.com.estudo.dao;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -6,6 +6,9 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+
+import br.com.estudo.db.ConnectionFactory;
+import br.com.estudo.model.Contato;
 
 import com.mysql.jdbc.PreparedStatement;
 
@@ -49,19 +52,8 @@ public class ContatoDao {
 
 			while (rs.next()) {
 				// Criando objeto Contato
-				Contato contato = new Contato();
-				contato.setId(rs.getLong("id"));
-				contato.setNome(rs.getString("nome"));
-				contato.setEmail(rs.getString("email"));
-				contato.setEndereco(rs.getString("endereco"));
-
-				// montando a data através do Calendar
-				/*
-				 * Calendar data = Calendar.getInstance();
-				 * data.setTime(rs.getDate("dataNascimento"));
-				 * contato.setDataNascimento(data);
-				 */
-
+				Contato contato = convertResultSet2Contato(rs);
+				
 				// adicionando o objeto à lista
 				contatos.add(contato);
 			}
@@ -105,28 +97,58 @@ public class ContatoDao {
 			throw new RuntimeException(e);
 		}
 	}
+	
+	private List<Contato> convertResultSet2ContatoList(ResultSet results){
+		List<Contato> contatos = new ArrayList<Contato>();
+		try {
+			while (results.next()) {
+				Contato contato = convertResultSet2Contato(results);
+				contatos.add(contato);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return contatos;
+	}
+	
+	private Contato convertResultSet2Contato(ResultSet result){
+		try {
+			Contato contato = new Contato();
+			contato.setId(result.getLong("id"));
+			contato.setNome(result.getString("nome"));
+			contato.setEmail(result.getString("email"));
+			contato.setEndereco(result.getString("endereco"));
+			// montando a data através do Calendar
+			/*
+			 * Calendar data = Calendar.getInstance();
+			 * data.setTime(rs.getDate("dataNascimento"));
+			 * contato.setDataNascimento(data);
+			 */
+			return contato;
+		} catch (SQLException e) {
+			System.out.println("Erro");
+			e.printStackTrace();
+		}
+		return null;
+	}
 
 	public List<Contato> getContatoByEmail(String email) {
-		List<Contato> consultaEmail = new ArrayList<Contato>();
+		if(email==null){
+			throw new IllegalArgumentException("O email não pode ser nulo");
+		}
+		List<Contato> consultaEmail = null;
 		try {
 			PreparedStatement stmt = (PreparedStatement) this.connection
 					.prepareStatement("select * from contatos where email like ?");
 			stmt.setString(1, "%" + email + "%");
 			ResultSet rs = stmt.executeQuery();
-
-			while (rs.next()) {
-				Contato contato = new Contato();
-				contato.setId(rs.getLong("id"));
-				contato.setNome(rs.getString("nome"));
-				contato.setEmail(rs.getString("email"));
-				contato.setEndereco(rs.getString("endereco"));
-
-				consultaEmail.add(contato);
-			}
+			consultaEmail = convertResultSet2ContatoList(rs);
+			
 			rs.close();
 			stmt.close();
 
 		} catch (SQLException e) {
+			e.printStackTrace();
 			throw new RuntimeException(e);
 		}
 
@@ -134,31 +156,17 @@ public class ContatoDao {
 	}
 
 	public List<Contato> getContatoComNomeIniciandoCom(String inicioNome) {
+		if(inicioNome==null){
+			throw new IllegalArgumentException("O inicioNome não pode ser nulo");
+		}
 		try {
-			List<Contato> consultaPrimeiraLetra = new ArrayList<Contato>();
+			List<Contato> consultaPrimeiraLetra = null;
 			PreparedStatement stmt = (PreparedStatement) this.connection
 					.prepareStatement("select * from contatos where nome like ?");
 			stmt.setString(1, inicioNome + "%");
 			ResultSet rs = stmt.executeQuery();
-
-			while (rs.next()) {
-				// Criando objeto Contato
-				Contato contato = new Contato();
-				contato.setId(rs.getLong("id"));
-				contato.setNome(rs.getString("nome"));
-				contato.setEmail(rs.getString("email"));
-				contato.setEndereco(rs.getString("endereco"));
-
-				// montando a data através do Calendar
-				/*
-				 * Calendar data = Calendar.getInstance();
-				 * data.setTime(rs.getDate("dataNascimento"));
-				 * contato.setDataNascimento(data);
-				 */
-
-				// adicionando o objeto à lista
-				consultaPrimeiraLetra.add(contato);
-			}
+			consultaPrimeiraLetra = convertResultSet2ContatoList(rs);
+			
 			rs.close();
 			stmt.close();
 			return consultaPrimeiraLetra;
@@ -176,24 +184,14 @@ public class ContatoDao {
 			stmt.setLong(1, id);
 			ResultSet rs = stmt.executeQuery();
 
-			Contato contato = new Contato();
+			Contato contato = null;
 
 			rs.next();
 			// Criando objeto Contato
-
-			contato.setId(rs.getLong("id"));
-			contato.setNome(rs.getString("nome"));
-			contato.setEmail(rs.getString("email"));
-			contato.setEndereco(rs.getString("endereco"));
+			contato = convertResultSet2Contato(rs);
 
 			System.out.println(contato);
-			// montando a data através do Calendar
-			/*
-			 * Calendar data = Calendar.getInstance();
-			 * data.setTime(rs.getDate("dataNascimento"));
-			 * contato.setDataNascimento(data);
-			 */
-
+			
 			rs.close();
 			stmt.close();
 			return contato;
