@@ -11,6 +11,7 @@ import br.com.estudo.db.ConnectionFactory;
 import br.com.estudo.model.Contato;
 
 import com.mysql.jdbc.PreparedStatement;
+import com.mysql.jdbc.StringUtils;
 
 public class ContatoDao {
 
@@ -131,10 +132,20 @@ public class ContatoDao {
 		}
 		return null;
 	}
+	
+	public boolean isEmptyOrWhiteSpacesOrNull(String entrada){
+		boolean isEmptyOrWhiteSpaces = StringUtils.isEmptyOrWhitespaceOnly(entrada);
+		
+		if(isEmptyOrWhiteSpaces==true || entrada == null){	
+			return true;
+		}
+		return false;
+	}
 
 	public List<Contato> getContatoByEmail(String email) {
-		if(email==null){
-			throw new IllegalArgumentException("O email não pode ser nulo");
+		boolean isEmptyOrWhiteSpacesOrNull = isEmptyOrWhiteSpacesOrNull(email);
+		if(isEmptyOrWhiteSpacesOrNull==true){
+			throw new IllegalArgumentException("O email não pode ser nulo ou vazio");
 		}
 		List<Contato> consultaEmail = null;
 		try {
@@ -156,8 +167,9 @@ public class ContatoDao {
 	}
 
 	public List<Contato> getContatoComNomeIniciandoCom(String inicioNome) {
-		if(inicioNome==null){
-			throw new IllegalArgumentException("O inicioNome não pode ser nulo");
+		boolean isEmptyOrWhiteSpacesOrNull = isEmptyOrWhiteSpacesOrNull(inicioNome);
+		if(isEmptyOrWhiteSpacesOrNull==true){			
+			throw new IllegalArgumentException("O inicioNome não pode ser nulo ou vazio");
 		}
 		try {
 			List<Contato> consultaPrimeiraLetra = null;
