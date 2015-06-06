@@ -3,8 +3,10 @@ package br.com.estudo.dao;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import br.com.estudo.db.ConnectionFactory;
@@ -22,8 +24,8 @@ public class ContatoDao {
 	}
 
 	public void adiciona(Contato contato) {
-		String sql = "insert into contatos" + "(nome, email, endereco)"
-				+ "values (?,?,?)";
+		String sql = "insert into contatos" + "(nome, email, endereco,dataNascimento)"
+				+ "values (?,?,?,?)";
 
 		try {
 			java.sql.PreparedStatement stmt = connection.prepareStatement(sql);
@@ -31,9 +33,10 @@ public class ContatoDao {
 			stmt.setString(1, contato.getNome());
 			stmt.setString(2, contato.getEmail());
 			stmt.setString(3, contato.getEndereco());
-			// stmt.setDate(4, new
-			// Date(contato.getDataNascimento().getTimesInMillis()));
-
+			//stmt.(4, new Date(contato.getDataNascimento().getTimeInMillis()));
+			
+			//stmt.setDate(4, new java.sql.Date(contato.getDataNascimento().getTimeInMillis()));
+			stmt.setTimestamp(4, new Timestamp(new Date().getTime()));
 			stmt.execute();
 			stmt.close();
 
@@ -54,7 +57,7 @@ public class ContatoDao {
 			while (rs.next()) {
 				// Criando objeto Contato
 				Contato contato = convertResultSet2Contato(rs);
-				
+
 				// adicionando o objeto à lista
 				contatos.add(contato);
 			}
@@ -98,8 +101,8 @@ public class ContatoDao {
 			throw new RuntimeException(e);
 		}
 	}
-	
-	private List<Contato> convertResultSet2ContatoList(ResultSet results){
+
+	private List<Contato> convertResultSet2ContatoList(ResultSet results) {
 		List<Contato> contatos = new ArrayList<Contato>();
 		try {
 			while (results.next()) {
@@ -111,8 +114,8 @@ public class ContatoDao {
 		}
 		return contatos;
 	}
-	
-	private Contato convertResultSet2Contato(ResultSet result){
+
+	private Contato convertResultSet2Contato(ResultSet result) {
 		try {
 			Contato contato = new Contato();
 			contato.setId(result.getLong("id"));
@@ -132,37 +135,49 @@ public class ContatoDao {
 		}
 		return null;
 	}
-	
-	public boolean isEmptyOrWhiteSpacesOrNull(String entrada){
-		boolean isEmptyOrWhiteSpaces = StringUtils.isEmptyOrWhitespaceOnly(entrada);
-		
-		if(isEmptyOrWhiteSpaces==true || entrada == null){	
+
+	public boolean isEmptyOrWhiteSpacesOrNull(String entrada) {
+		boolean isEmptyOrWhiteSpaces = StringUtils
+				.isEmptyOrWhitespaceOnly(entrada);
+
+		if (isEmptyOrWhiteSpaces == true || entrada == null) {
 			return true;
 		}
 		return false;
 	}
 
-	public List<Contato> getContatoByEmail(String email) {
-		boolean isEmptyOrWhiteSpacesOrNull = isEmptyOrWhiteSpacesOrNull(email);
-		if(isEmptyOrWhiteSpacesOrNull==true){
-			throw new IllegalArgumentException("O email não pode ser nulo ou vazio");
-		}
-		List<Contato> consultaEmail = null;
+	private List<Contato> executaConsulta(PreparedStatement preparedStatement) {
+		List<Contato> consulta = null;
 		try {
-			PreparedStatement stmt = (PreparedStatement) this.connection
-					.prepareStatement("select * from contatos where email like ?");
-			stmt.setString(1, "%" + email + "%");
-			ResultSet rs = stmt.executeQuery();
-			consultaEmail = convertResultSet2ContatoList(rs);
-			
-			rs.close();
-			stmt.close();
+			ResultSet rs = preparedStatement.executeQuery();
+			consulta = convertResultSet2ContatoList(rs);
 
+			rs.close();
+			preparedStatement.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 			throw new RuntimeException(e);
 		}
+		return consulta;
+	}
 
+	public List<Contato> getContatoByEmail(String email) {
+		boolean isEmptyOrWhiteSpacesOrNull = isEmptyOrWhiteSpacesOrNull(email);
+		if (isEmptyOrWhiteSpacesOrNull == true) {
+			throw new IllegalArgumentException(
+					"O email não pode ser nulo ou vazio");
+		}
+		PreparedStatement preparedStatement;
+		List<Contato> consultaEmail = null;
+		try {
+			preparedStatement = (PreparedStatement) this.connection
+					.prepareStatement("select * from contatos where email like ?");
+			preparedStatement.setString(1, "%" + email + "%");
+			consultaEmail = executaConsulta(preparedStatement);
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new RuntimeException(e);
+		}
 		return consultaEmail;
 	}
 
@@ -171,21 +186,17 @@ public class ContatoDao {
 		if(isEmptyOrWhiteSpacesOrNull==true){			
 			throw new IllegalArgumentException("O inicioNome não pode ser nulo ou vazio");
 		}
+		List<Contato> consultaPrimeiraLetra = null;
 		try {
-			List<Contato> consultaPrimeiraLetra = null;
-			PreparedStatement stmt = (PreparedStatement) this.connection
-					.prepareStatement("select * from contatos where nome like ?");
-			stmt.setString(1, inicioNome + "%");
-			ResultSet rs = stmt.executeQuery();
-			consultaPrimeiraLetra = convertResultSet2ContatoList(rs);
-			
-			rs.close();
-			stmt.close();
-			return consultaPrimeiraLetra;
-
-		} catch (SQLException e) {
-			throw new RuntimeException(e);
-		}
+			PreparedStatement preparedStatement;
+			preparedStatement =(PreparedStatement) this.connection.prepareStatement("select * from contatos where nome like ?");
+			preparedStatement.setString(1, inicioNome + "%");
+			consultaPrimeiraLetra = executaConsulta(preparedStatement);
+			} catch (Exception e) {
+				e.printStackTrace();
+				throw new RuntimeException(e);
+			}
+		return consultaPrimeiraLetra;
 	}
 
 	public Contato consultaContatoById(long id) {
@@ -203,14 +214,13 @@ public class ContatoDao {
 			contato = convertResultSet2Contato(rs);
 
 			System.out.println(contato);
-			
+
 			rs.close();
 			stmt.close();
 			return contato;
 
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
-
 		}
 	}
 

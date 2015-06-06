@@ -1,13 +1,13 @@
 package br.com.estudo.model;
 
-//import java.util.Calendar;
+import java.util.Calendar;
 
 public class Contato {
 	private Long id;
 	private String nome;
 	private String email;
 	private String endereco;
-	//private Calendar dataNascimento;
+	private Calendar dataNascimento;
 	
 	public Long getId() {
 		return id;
@@ -39,12 +39,12 @@ public class Contato {
 				+ ", endereco=" + endereco + "]";
 	}
 	
-	/*public Calendar getDataNascimento() {
+	public Calendar getDataNascimento() {
 		return dataNascimento;
 	}
 	public void setDataNascimento(Calendar dataNascimento) {
 		this.dataNascimento = dataNascimento;
-	}*/
+	}
 
 	
 	
